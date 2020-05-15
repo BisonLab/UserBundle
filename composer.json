@@ -1,0 +1,21 @@
+{
+    "name": "bisonlab/user-bundle",
+    "type": "symfony-bundle",
+    "description": "This is a bundle for the simplest user handling I need, prefeferably using maker-bundle generated code",
+    "keywords": ["user symfony doctrine"],
+    "homepage": "https://github.com/bisonlab/BisonLabUserBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Thomas Lundquist",
+            "email": "github@bisonlab.no"
+        }
+    ],
+    "require": {
+        "symfony/framework-bundle": "^5.0",
+        "symfonycasts/reset-password-bundle": "^1.1"
+    },
+    "autoload": {
+        "psr-4": { "BisonLab\\UserBundle\\": "" }
+    }
+}
