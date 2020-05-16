@@ -17,5 +17,6 @@ class BisonLabUserExtension extends Extension
             new FileLocator(__DIR__.'/../config')
         );
         $loader->load('services.yaml');
+        $loader->load('services.yaml');
     }
 }
