@@ -33,7 +33,7 @@ trait UserTrait
     private $email;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(type="array")
      */
     private $roles = [];
 
@@ -42,6 +42,12 @@ trait UserTrait
      * @ORM\Column(type="string")
      */
     private $password;
+
+    /**
+     * @var datetime Last Login
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $last_login;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
@@ -53,13 +59,9 @@ trait UserTrait
      */
     private $last_name;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="BisonLab\UserBundle\Entity\Group", inversedBy="users")
-     */
-    private $groups;
-
     public function __construct()
     {
+        $this->last_login = new \DateTime();
         $this->groups = new ArrayCollection();
     }
 
@@ -93,6 +95,18 @@ trait UserTrait
     public function setEmail(string $email): self
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getLastLogin(): \Datetime
+    {
+        return $this->last_login;
+    }
+
+    public function setLastLogin(\DateTime $last_login): self
+    {
+        $this->last_login = $last_login;
 
         return $this;
     }
@@ -237,21 +251,9 @@ trait UserTrait
         return false;
     }
 
-    /*
-     * Check if any roles has enabled true.
-     * Notice that enabled is not the opposite of disabled.
-     * If any enabled role, say true.
-     *  
-     */
     public function isEnabled(): bool
     {
-        foreach (ExternalEntityConfig::getRolesConfig() as $role => $conf) {
-            if (!$conf['enabled'])
-                continue;
-            if (in_array($role ,$this->getRoles()))
-                return true;
-        }
-        return false;
+        return !$this->isDisabled();
     }
 
     /*
@@ -261,7 +263,7 @@ trait UserTrait
     public function isDisabled(): bool
     {
         foreach (ExternalEntityConfig::getRolesConfig() as $role => $conf) {
-            if (!$conf['enabled'])
+            if ($conf['enabled'])
                 continue;
             if (in_array($role ,$this->getRoles()))
                 return true;
@@ -269,8 +271,44 @@ trait UserTrait
         return false;
     }
 
+    public function hasGroup($name): bool
+    {
+        return in_array($name, $this->getGroupNames());
+    }
+
     public function hasRole($role): bool
     {
-        return in_array($role, ExternalEntityConfig::getRoles());
+        return in_array($role, $this->getRoles());
+    }
+
+    public function getGroupNames()
+    {
+        $names = array();
+        foreach ($this->getGroups() as $g) {
+            $names[] = $g->getName();
+        }
+        return $names;
+    }
+
+    public function getRoleLabels()
+    {
+        $labels = array();
+        $rconf = ExternalEntityConfig::getRolesConfig();
+        foreach ($this->getRoles() as $role) {
+            if (isset($rconf[$role]))
+                $labels[] = $rconf[$role]['label'];
+        }
+        return $labels;
+    }
+
+
+    public function getFullName(): string
+    {
+        return implode(" ", [$this->first_name, $this->last_name]);
+    }
+
+    public function __toString(): string
+    {
+        return $this->getFullName();
     }
 }

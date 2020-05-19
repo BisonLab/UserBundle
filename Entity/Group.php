@@ -14,4 +14,9 @@ use BisonLab\UserBundle\Lib\ExternalEntityConfig;
 class Group
 {
     use GroupTrait;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="BisonLab\UserBundle\Entity\User", mappedBy="groups")
+     */
+    private $users;
 }

@@ -5,28 +5,26 @@
 {% block body %}
     <h1>User index</h1>
 
-    <table class="table">
+    <table class="table sortable_table">
         <thead>
             <tr>
-                <th>Id</th>
                 <th>Username</th>
+                <th>Name</th>
+                <th>Enabled</th>
                 <th>Roles</th>
-                <th>First_name</th>
-                <th>Last_name</th>
-                <th>actions</th>
+                <th>&nbsp;</th>
             </tr>
         </thead>
         <tbody>
         {% for user in users %}
             <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.username }}</td>
-                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
-                <td>{{ user.firstName }}</td>
-                <td>{{ user.lastName }}</td>
+                <td><a href="{{ path('bisonlab_user_show', {'id': user.id}) }}">{{ user.username }}</a></td>
+                <td>{{ user }}</td>
+                <td>{% if  user.enabled %}Yes{%else%}No{%endif%}</td>
+                <td>{{ user.rolelabels | join(", ") }}</td>
                 <td>
-                    <a href="{{ path('bisonlab_user_show', {'id': user.id}) }}">show</a>
-                    <a href="{{ path('bisonlab_user_edit', {'id': user.id}) }}">edit</a>
+                    <a href="{{ path('bisonlab_user_show', {'id': user.id}) }}">Show</a>
+                    <a href="{{ path('bisonlab_user_edit', {'id': user.id}) }}">Edit</a>
                 </td>
             </tr>
         {% else %}
@@ -37,5 +35,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('bisonlab_user_new') }}">Create new</a>
+    <a href="{{ path('bisonlab_user_new') }}" class="btn btn-primary">Create new</a>
 {% endblock %}

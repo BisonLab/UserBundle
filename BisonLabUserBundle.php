@@ -11,6 +11,6 @@ class BisonLabUserBundle extends Bundle
 
     public function boot()
     {
-       ExternalEntityConfig::setRolesConfig($this->container->getParameter('bisolab_user.roles'));
+       ExternalEntityConfig::setRolesConfig($this->container->getParameter('bisonlab_user.roles'));
     }
 }

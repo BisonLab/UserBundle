@@ -20,9 +20,7 @@ class GroupController extends AbstractController
      */
     public function index(GroupRepository $groupRepository): Response
     {
-        if (!$admin_user = $this->getUser())
-            throw $this->createAccessDeniedException("No access for you");
-        if (!$admin_user->isAdmin())
+        if (!$this->getUser() || !$this->getUser()->isAdmin())
             throw $this->createAccessDeniedException("No access for you");
         return $this->render('@BisonLabUser/group/index.html.twig', [
             'groups' => $groupRepository->findAll(),
@@ -34,9 +32,7 @@ class GroupController extends AbstractController
      */
     public function new(Request $request): Response
     {
-        if (!$admin_user = $this->getUser())
-            throw $this->createAccessDeniedException("No access for you");
-        if (!$admin_user->isAdmin())
+        if (!$this->getUser() || !$this->getUser()->isAdmin())
             throw $this->createAccessDeniedException("No access for you");
         $group = new Group();
         $form = $this->createForm(GroupType::class, $group);
@@ -62,9 +58,6 @@ class GroupController extends AbstractController
     public function show(Group $group): Response
     {
         if (!$admin_user = $this->getUser())
-            throw $this->createAccessDeniedException("No access for you");
-        if (!$admin_user->isAdmin())
-            throw $this->createAccessDeniedException("No access for you");
         return $this->render('@BisonLabUser/group/show.html.twig', [
             'group' => $group,
         ]);
@@ -75,9 +68,7 @@ class GroupController extends AbstractController
      */
     public function edit(Request $request, Group $group): Response
     {
-        if (!$admin_user = $this->getUser())
-            throw $this->createAccessDeniedException("No access for you");
-        if (!$admin_user->isAdmin())
+        if (!$this->getUser() || !$this->getUser()->isAdmin())
             throw $this->createAccessDeniedException("No access for you");
         $form = $this->createForm(GroupType::class, $group);
         $form->handleRequest($request);
@@ -99,9 +90,7 @@ class GroupController extends AbstractController
      */
     public function delete(Request $request, Group $group): Response
     {
-        if (!$admin_user = $this->getUser())
-            throw $this->createAccessDeniedException("No access for you");
-        if (!$admin_user->isAdmin())
+        if (!$this->getUser() || !$this->getUser()->isAdmin())
             throw $this->createAccessDeniedException("No access for you");
         if ($this->isCsrfTokenValid('delete'.$group->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();

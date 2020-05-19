@@ -1,27 +1,34 @@
 parameters:
-    bisolab_user.roles:
+    bisonlab_user.roles:
         ROLE_USER:
             label: Plain User
             admin: false
+            default: true
             enabled: true
         ROLE_ADMIN:
             label: Admin
             admin: true
             enabled: true
+            default: false
         ROLE_SUPER_ADMIN:
             label: Superadmin
             admin: true
             enabled: true
+            default: false
         ROLE_DISABLED:
             label: Disabled
             admin: false
             enabled: false
+            default: false
     # Mainly/Only for password reset mail.
-    bisolab_user.mailfrom: "foo@bar.local"
-    bisolab_user.mailname: "BisonLab Reset password"
+    bisonlab_user.mailfrom: "foo@bar.local"
+    bisonlab_user.mailname: "BisonLab Reset password"
+
+# If you want to use this here, remove the reset_password.yaml in your app.
+# Or just copy this to it and uncomment
 
 #symfonycasts_reset_password:
-#  request_password_repository: BisonLab\UserBundle\Repository\ResetPasswordRequestRepository
-#  lifetime: 3600
-#  throttle_limit: 3600
-#  enable_garbage_collection: true
+#    request_password_repository: BisonLab\UserBundle\Repository\ResetPasswordRequestRepository
+#    lifetime: 3600
+#    throttle_limit: 3600
+#    enable_garbage_collection: true

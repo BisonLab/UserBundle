@@ -7,7 +7,7 @@
 
     {{ include('@BisonLabUser/user/_form.html.twig', {'button_label': 'Update'}) }}
 
-    <a href="{{ path('bisonlab_user_index') }}">back to list</a>
+    <a href="{{ path('bisonlab_user_index') }}" class="btn btn-light">Back to list</a>
 
     {{ include('@BisonLabUser/user/_delete_form.html.twig') }}
 {% endblock %}

@@ -64,12 +64,11 @@ class BisonLabUserAuthenticator extends AbstractFormLoginAuthenticator implement
         }
 
         // Load / create our user however you need.
-        // You can do this by calling the user provider, or with custom logic here.
         $user = $userProvider->loadUserByUsername($credentials['username']);
 
         if (!$user) {
             // fail authentication with a custom error
-            throw new CustomUserMessageAuthenticationException('Username could not be found.');
+            throw new CustomUserMessageAuthenticationException('Invalid credentials.');
         }
 
         return $user;
@@ -95,7 +94,8 @@ class BisonLabUserAuthenticator extends AbstractFormLoginAuthenticator implement
         }
 
         // Should this be grabbed from a config option? I think yes.
-        return new RedirectResponse($this->urlGenerator->generate('dashboard'));
+        // "index" for now since it's configured per application.
+        return new RedirectResponse($this->urlGenerator->generate('index'));
     }
 
     protected function getLoginUrl()

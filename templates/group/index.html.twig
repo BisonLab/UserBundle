@@ -5,10 +5,9 @@
 {% block body %}
     <h1>Group index</h1>
 
-    <table class="table">
+    <table class="table sortable_table">
         <thead>
             <tr>
-                <th>Id</th>
                 <th>Name</th>
                 <th>Roles</th>
                 <th>actions</th>
@@ -17,7 +16,6 @@
         <tbody>
         {% for group in groups %}
             <tr>
-                <td>{{ group.id }}</td>
                 <td>{{ group.name }}</td>
                 <td>{{ group.roles ? group.roles|json_encode : '' }}</td>
                 <td>
@@ -33,5 +31,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('bisonlab_group_new') }}">Create new</a>
+    <a href="{{ path('bisonlab_group_new') }}" class="btn btn-primary">Create new</a>
 {% endblock %}

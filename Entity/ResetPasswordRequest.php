@@ -8,6 +8,7 @@ use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordRequestTrait;
 
 /**
  * @ORM\Entity(repositoryClass="BisonLab\UserBundle\Repository\ResetPasswordRequestRepository")
+ * @ORM\Table(name="bisonlab_resetpasswordrequest")
  */
 class ResetPasswordRequest implements ResetPasswordRequestInterface
 {

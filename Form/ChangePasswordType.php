@@ -9,11 +9,28 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 
-class ChangePasswordFormType extends AbstractType
+class ChangePasswordType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $builder->add('current_password', PasswordType::class, [
+            'label' => 'Current Password',
+            'mapped' => false,
+            'constraints' => [
+                new NotBlank([
+                    'message' => 'Please enter a password',
+                ]),
+                new UserPassword([
+                    'message' => 'Invalid password',
+                ]),
+            ],
+            'attr' => [
+                'autocomplete' => 'current-password',
+            ],
+        ]);
+
         $builder
             ->add('plainPassword', RepeatedType::class, [
                 'type' => PasswordType::class,

@@ -22,14 +22,9 @@ trait GroupTrait
     private $name;
 
     /**
-     * @ORM\Column(type="json")
+     * @ORM\Column(type="array")
      */
     private $roles = [];
-
-    /**
-     * @ORM\ManyToMany(targetEntity="BisonLab\UserBundle\Entity\User", mappedBy="groups")
-     */
-    private $users;
 
     public function __construct()
     {
@@ -95,5 +90,10 @@ trait GroupTrait
         }
 
         return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->getName();
     }
 }

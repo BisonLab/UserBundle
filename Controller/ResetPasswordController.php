@@ -3,7 +3,7 @@
 namespace BisonLab\UserBundle\Controller;
 
 use BisonLab\UserBundle\Entity\User;
-use BisonLab\UserBundle\Form\ChangePasswordFormType;
+use BisonLab\UserBundle\Form\ResetPasswordFormType;
 use BisonLab\UserBundle\Form\ResetPasswordRequestFormType;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -33,9 +33,34 @@ class ResetPasswordController extends AbstractController
     }
 
     /**
+     * Forces a reset password mail to a specified user.
+     *
+     * @Route("/{user}/reset_user", name="bisonlab_reset_user_password", methods={"POST"})
+     */
+    public function resetUser(Request $request, MailerInterface $mailer, User $user): Response
+    {
+        if (!$this->getUser() || !$this->getUser()->isAdmin())
+            throw $this->createAccessDeniedException("No access for you");
+        $form = $this->createForm(ResetPasswordRequestFormType::class);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            return $this->processSendingPasswordResetEmail(
+                $form->get('email')->getData(),
+                $mailer
+            );
+        }
+
+        return $this->render('@BisonLabUser/user/show.html.twig', [
+            'user' => $user,
+            'reset_form' => $form->createView(),
+        ]);
+    }
+
+    /**
      * Display & process form to request a password reset.
      *
-     * @Route("", name="bisonlab_forgot_password_request")
+     * @Route("/request", name="bisonlab_forgot_password_request")
      */
     public function request(Request $request, MailerInterface $mailer): Response
     {
@@ -103,7 +128,7 @@ class ResetPasswordController extends AbstractController
         }
 
         // The token is valid; allow the user to change their password.
-        $form = $this->createForm(ChangePasswordFormType::class);
+        $form = $this->createForm(ResetPasswordFormType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -156,7 +181,7 @@ class ResetPasswordController extends AbstractController
         }
 
         $email = (new TemplatedEmail())
-            ->from(new Address($this->getParameter('bisonlab_user.mailfrom'), $this->getParameter(bisonlab_user.mailname)))
+            ->from(new Address($this->getParameter('bisonlab_user.mailfrom'), $this->getParameter('bisonlab_user.mailname')))
             ->to($user->getEmail())
             ->subject('Your password reset request')
             ->htmlTemplate('@BisonLabUser/reset_password/email.html.twig')

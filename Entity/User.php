@@ -20,4 +20,13 @@ use BisonLab\UserBundle\Entity\Group;
 class User implements UserInterface
 {
     use UserTrait;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="BisonLab\UserBundle\Entity\Group", inversedBy="users")
+     * @ORM\JoinTable(name="bisonlab_users_groups",
+     *   joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
+     *   inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
+     * )
+     */
+    private $groups;
 }
