@@ -10,6 +10,7 @@
             <tr>
                 <th>Username</th>
                 <th>Name</th>
+                <th>Email</th>
                 <th>Enabled</th>
                 <th>Roles</th>
                 <th>&nbsp;</th>
@@ -20,6 +21,7 @@
             <tr>
                 <td><a href="{{ path('bisonlab_user_show', {'id': user.id}) }}">{{ user.username }}</a></td>
                 <td>{{ user }}</td>
+                <td>{{ user.email }}</td>
                 <td>{% if  user.enabled %}Yes{%else%}No{%endif%}</td>
                 <td>{{ user.rolelabels | join(", ") }}</td>
                 <td>

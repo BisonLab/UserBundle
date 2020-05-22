@@ -5,6 +5,7 @@ namespace BisonLab\UserBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
@@ -106,6 +107,85 @@ class UserController extends AbstractController
                 'form' => $form->createView(),
             ));
         }
+    }
+
+    /**
+     * @Route("/search", name="bisonlab_user_search", methods={"GET"})
+     */
+    public function search(Request $request)
+    {
+        $access = $request->query->get("access") ?? "web";
+        if (!$term = $request->query->get("term"))
+            $term = $request->query->get("username");
+
+        // Gotta be able to handle two-letter usernames.
+        if (strlen($term) > 1) {
+            $em = $this->getDoctrine()->getManagerForClass(User::class);
+            $class = new User();
+            $repo = $em->getRepository(User::class);
+            $result = array();
+            $q = $repo->createQueryBuilder('u')
+                ->where('lower(u.username) LIKE :term')
+                ->orWhere('lower(u.email) LIKE :term')
+                ->setParameter('term', strtolower($term) . '%');
+            if (property_exists($class, 'full_name')) {
+                $q->orWhere('lower(u.full_name) LIKE :full_name')
+                ->setParameter('full_name', '%' . strtolower($term) . '%');
+            }
+            if (property_exists($class, 'mobile_phone_number')) {
+                $q->orWhere('lower(u.mobile_phone_number) LIKE :mobile_phone_number')
+                ->setParameter('mobile_phone_number', '%' . strtolower($term) . '%');
+            }
+            if (property_exists($class, 'phone_number')) {
+                $q->orWhere('lower(u.phone_number) LIKE :phone_number')
+                ->setParameter('phone_number', '%' . strtolower($term) . '%');
+            }
+            if (property_exists($class, 'state')) {
+                if (!$states = $request->query->get("states"))
+                    $states = [];
+                if ($state = $request->query->get("state"))
+                    $states[] = $state;
+                if (count($states) > 0)
+                    $q->andWhere('u.state) in (:states)')
+                        ->setParameter('states', $states);
+            }
+
+            if ($users = $q->getQuery()->getResult()) {
+                foreach ($users as $user) {
+                    // TODO: Add full name.
+                    $res = array(
+                        'userid'   => $user->getId(),
+                        'value'    => $user->getUserName(),
+                        'email'    => $user->getEmail(),
+                        'label'    => $user->getUserName(),
+                        'username' => $user->getUserName(),
+                    );
+                    // Override if full name exists.
+                    if (property_exists($user, 'full_name')
+                            && $user->getFullName()) {
+                        $res['label'] = $user->getFullName();
+                        $res['value'] = $user->getFullName();
+                    }
+                    if ($request->get("value_with_email")) {
+                        $res['value'] = $res['value'] . " - " . $user->getEmail();
+                        $res['label'] = $res['label'] . " - " . $user->getEmail();
+                    }
+                    $result[] = $res;
+                }
+            }
+        } else {
+            $result = "Too little information provided for a viable search";
+        }
+
+        if ($access != "web") {
+            return new JsonResponse($result);
+        }
+
+        $params = array(
+            'entities'      => $users,
+        );
+        return $this->render('@BisonLabUser/User/index.html.twig',
+            $params);
     }
 
     /**

@@ -59,6 +59,11 @@ trait UserTrait
      */
     private $last_name;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $full_name;
+
     public function __construct()
     {
         $this->last_login = new \DateTime();
@@ -188,6 +193,7 @@ trait UserTrait
     {
         $this->first_name = $first_name;
 
+        $this->_setFullName();
         return $this;
     }
 
@@ -199,6 +205,19 @@ trait UserTrait
     public function setLastName(?string $last_name): self
     {
         $this->last_name = $last_name;
+        $this->_setFullName();
+
+        return $this;
+    }
+
+    public function getFullName(): ?string
+    {
+        return $this->full_name;
+    }
+
+    private function _setFullName(): self
+    {
+        $this->full_name = implode(" ", [$this->first_name, $this->last_name]);
 
         return $this;
     }
@@ -301,14 +320,8 @@ trait UserTrait
         return $labels;
     }
 
-
-    public function getFullName(): string
-    {
-        return implode(" ", [$this->first_name, $this->last_name]);
-    }
-
     public function __toString(): string
     {
-        return $this->getFullName();
+        return $this->full_name ?: $this->getUserName();
     }
 }
