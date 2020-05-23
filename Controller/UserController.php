@@ -111,6 +111,7 @@ class UserController extends AbstractController
 
     /**
      * @Route("/search", name="bisonlab_user_search", methods={"GET"})
+     * @Route("/search", name="user_search", methods={"GET"})
      */
     public function search(Request $request)
     {
