@@ -2,21 +2,25 @@ parameters:
     bisonlab_user.roles:
         ROLE_USER:
             label: Plain User
+            description: "The default user role"
             admin: false
             default: true
             enabled: true
         ROLE_ADMIN:
             label: Admin
+            description: "The default admin role"
             admin: true
             enabled: true
             default: false
         ROLE_SUPER_ADMIN:
             label: Superadmin
+            description: "The super, do all, admin role"
             admin: true
             enabled: true
             default: false
         ROLE_DISABLED:
             label: Disabled
+            description: "The sad, do nothing role"
             admin: false
             enabled: false
             default: false
