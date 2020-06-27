@@ -75,11 +75,11 @@ class UserController extends AbstractController
     }
 
     /**
-     * Change password on a User.
+     * Change password on self.
      *
      * @Route("/change_password", name="bisonlab_self_change_password", methods={"GET", "POST"})
      */
-    public function changePasswordAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    public function changeSelfPasswordAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
     {
         $user = $this->getUser();
 
@@ -101,9 +101,46 @@ class UserController extends AbstractController
 
             return $this->redirectToRoute('bisonlab_user_profile');
         } else {
-            return $this->render('@BisonLabUser/user/change_password.html.twig',
+            return $this->render('@BisonLabUser/user/change_self_password.html.twig',
                 array(
                 'entity' => $user,
+                'form' => $form->createView(),
+            ));
+        }
+    }
+
+    /**
+     * Change password on user.
+     *
+     * @Route("/{id}/change_password", name="bisonlab_user_change_password", methods={"GET", "POST"})
+     */
+    public function changeUserPasswordAction(Request $request, UserPasswordEncoderInterface $passwordEncoder, User $user)
+    {
+        if (!$admin_user = $this->getUser())
+            throw $this->createAccessDeniedException("No access for you");
+        if (!$admin_user->isAdmin())
+            throw $this->createAccessDeniedException("No access for you");
+        $form = $this->createForm(ChangePasswordType::class, $user, ['no_current_check' => true]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $password = $form->get('plainPassword')->getData();
+
+            // Encode the plain password, and set it.
+            $encodedPassword = $passwordEncoder->encodePassword(
+                $user, $password
+            );
+
+            $user->setPassword($encodedPassword);
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $entityManager->flush();
+
+            return $this->redirectToRoute('bisonlab_user_show', ['id' => $user->getId()]);
+        } else {
+            return $this->render('@BisonLabUser/user/change_user_password.html.twig',
+                array(
+                'user' => $user,
                 'form' => $form->createView(),
             ));
         }
