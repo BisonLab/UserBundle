@@ -44,6 +44,12 @@ trait UserTrait
     private $password;
 
     /**
+     * @var string The salt. This is a BC from fosuserbundle.
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $salt;
+
+    /**
      * @var datetime Last Login
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -170,9 +176,16 @@ trait UserTrait
     /**
      * @see UserInterface
      */
-    public function getSalt()
+    public function getSalt(): string
     {
-        // not needed when using the "bcrypt" algorithm in security.yaml
+        return (string) $this->salt;
+    }
+
+    public function setSalt($salt): self
+    {
+        $this->salt = $salt;
+
+        return $this;
     }
 
     /**

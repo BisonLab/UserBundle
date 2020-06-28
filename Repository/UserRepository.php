@@ -32,6 +32,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         }
 
         $user->setPassword($newEncodedPassword);
+        // We might have a salt leftover, let's just delete it.
+        $user->setSalt(null);
         $this->_em->persist($user);
         $this->_em->flush();
     }
