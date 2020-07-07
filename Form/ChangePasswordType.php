@@ -15,7 +15,6 @@ class ChangePasswordType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-dump($options);
         if (!$options['no_current_check']) {
             $builder->add('current_password', PasswordType::class, [
                 'label' => 'Current Password',
