@@ -8,20 +8,8 @@
     <table class="table">
         <tbody>
             <tr>
-                <th>Id</th>
-                <td>{{ user.id }}</td>
-            </tr>
-            <tr>
                 <th>Username</th>
                 <td>{{ user.username }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ user.email }}</td>
-            </tr>
-            <tr>
-                <th>Roles</th>
-                <td>{{ user.rolelabels | join(", ")}}</td>
             </tr>
             <tr>
                 <th>First Name</th>
@@ -31,6 +19,20 @@
                 <th>Last Name</th>
                 <td>{{ user.lastName }}</td>
             </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ user.email }}</td>
+            </tr>
+            <tr>
+                <th>Roles</th>
+                <td>{{ user.rolelabels | join(", ")}}</td>
+            </tr>
+{% if user.groups | length > 0 %}
+            <tr>
+                <th>Gropus</th>
+                <td>{{ user.groups | join(", ")}}</td>
+            </tr>
+{% endif %}
         </tbody>
     </table>
 
