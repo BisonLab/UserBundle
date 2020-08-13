@@ -57,7 +57,8 @@ class GroupController extends AbstractController
      */
     public function show(Group $group): Response
     {
-        if (!$admin_user = $this->getUser())
+        if (!$this->getUser() || !$this->getUser()->isAdmin())
+            throw $this->createAccessDeniedException("No access for you");
         return $this->render('@BisonLabUser/group/show.html.twig', [
             'group' => $group,
         ]);
