@@ -44,7 +44,7 @@
 
     <a href="{{ path('bisonlab_user_change_password', {'id': user.id}) }}" class="btn btn-primary">Change Password</a>
 
-    {{ form_start(reset_form, {'action': path('bisonlab_reset_user_password', {'user': user.id }), 'method': 'POST'}) }}
+    {{ form_start(reset_form, {'action': path('bisonlab_forgot_password_request', {'user': user.id }), 'method': 'POST'}) }}
 
         {{ form_widget(reset_form.email, { 'value': user.email , 'attr': {'class': 'd-none'}}) }}
         <button class="btn btn-primary">Send password reset email</button>

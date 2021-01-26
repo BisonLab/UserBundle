@@ -17,6 +17,7 @@ use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
+use Psr\Container\ContainerInterface;
 
 /**
  * @Route("/reset-password")
@@ -27,34 +28,10 @@ class ResetPasswordController extends AbstractController
 
     private $resetPasswordHelper;
 
-    public function __construct(ResetPasswordHelperInterface $resetPasswordHelper)
+    public function __construct(ResetPasswordHelperInterface $resetPasswordHelper, ContainerInterface $container)
     {
         $this->resetPasswordHelper = $resetPasswordHelper;
-    }
-
-    /**
-     * Forces a reset password mail to a specified user.
-     *
-     * @Route("/{user}/reset_user", name="bisonlab_reset_user_password", methods={"POST"})
-     */
-    public function resetUser(Request $request, MailerInterface $mailer, User $user): Response
-    {
-        if (!$this->getUser() || !$this->getUser()->isAdmin())
-            throw $this->createAccessDeniedException("No access for you");
-        $form = $this->createForm(ResetPasswordRequestFormType::class);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            return $this->processSendingPasswordResetEmail(
-                $form->get('email')->getData(),
-                $mailer
-            );
-        }
-
-        return $this->render('@BisonLabUser/user/show.html.twig', [
-            'user' => $user,
-            'reset_form' => $form->createView(),
-        ]);
+        $this->setContainer($container);
     }
 
     /**
