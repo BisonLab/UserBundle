@@ -333,6 +333,12 @@ trait UserTrait
         return $labels;
     }
 
+    public function getUserIdentifier()
+    {
+        return $this->username;
+    }
+
+
     public function __toString(): string
     {
         return $this->full_name ?: $this->getUserName();
