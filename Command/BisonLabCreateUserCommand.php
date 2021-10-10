@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 use BisonLab\UserBundle\Entity\User;
 
@@ -18,12 +18,12 @@ class BisonLabCreateUserCommand extends Command
     protected static $defaultName = 'bisonlab:user:create';
 
     private $entityManager;
-    private $passwordEncoder;
+    private $passwordHasher;
 
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
     {
         $this->entityManager = $entityManager;
-        $this->passwordEncoder = $passwordEncoder;
+        $this->passwordHasher = $passwordHasher;
 
         parent::__construct();
     }
@@ -53,7 +53,7 @@ class BisonLabCreateUserCommand extends Command
         $user = new User();
         if ($password = $input->getOption('password')) {
             // Encode the plain password, and set it.
-            $encodedPassword = $this->passwordEncoder->encodePassword(
+            $encodedPassword = $this->passwordHasher->hashPassword(
                 $user, $password
             );
             $user->setPassword($encodedPassword);

@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 use BisonLab\UserBundle\Form\ResetPasswordRequestFormType;
 use BisonLab\UserBundle\Entity\User;
@@ -79,7 +79,7 @@ class UserController extends AbstractController
      *
      * @Route("/change_password", name="bisonlab_self_change_password", methods={"GET", "POST"})
      */
-    public function changeSelfPasswordAction(Request $request, UserPasswordEncoderInterface $passwordEncoder)
+    public function changeSelfPasswordAction(Request $request, UserPasswordHasherInterface $passwordHasher)
     {
         $user = $this->getUser();
 
@@ -90,7 +90,7 @@ class UserController extends AbstractController
             $password = $form->get('plainPassword')->getData();
 
             // Encode the plain password, and set it.
-            $encodedPassword = $passwordEncoder->encodePassword(
+            $encodedPassword = $passwordHasher->hashPassword(
                 $user, $password
             );
 
@@ -114,7 +114,7 @@ class UserController extends AbstractController
      *
      * @Route("/{id}/change_password", name="bisonlab_user_change_password", methods={"GET", "POST"})
      */
-    public function changeUserPasswordAction(Request $request, UserPasswordEncoderInterface $passwordEncoder, User $user)
+    public function changeUserPasswordAction(Request $request, UserPasswordHasherInterface $passwordHasher, User $user)
     {
         if (!$admin_user = $this->getUser())
             throw $this->createAccessDeniedException("No access for you");
@@ -127,7 +127,7 @@ class UserController extends AbstractController
             $password = $form->get('plainPassword')->getData();
 
             // Encode the plain password, and set it.
-            $encodedPassword = $passwordEncoder->encodePassword(
+            $encodedPassword = $passwordHasher->hashPassword(
                 $user, $password
             );
 
