@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -19,29 +20,24 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 use BisonLab\UserBundle\Entity\User;
 
+#[AsCommand(
+    name: 'bisonlab:user:send-passwordmail',
+    description: 'Send a forgot password email'
+)]
 class BisonLabSendPasswordEmailCommand extends Command
 {
-    protected static $defaultName = 'bisonlab:user:send-passwordmail';
-
-    private $entityManager;
-    private $resetPasswordHelper;
-    private $mailer;
-    private $params;
-
-    public function __construct(EntityManagerInterface $entityManager, ResetPasswordHelperInterface $resetPasswordHelper, MailerInterface $mailer, ParameterBagInterface $params)
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private ResetPasswordHelperInterface $resetPasswordHelper,
+        private MailerInterface $mailer,
+        private ParameterBagInterface $params)
     {
-        $this->entityManager = $entityManager;
-        $this->resetPasswordHelper = $resetPasswordHelper;
-        $this->mailer = $mailer;
-        $this->params = $params;
-
         parent::__construct();
     }
 
     protected function configure()
     {
         $this
-            ->setDescription('Add a short description for your command')
             ->addArgument('username', InputArgument::REQUIRED, 'Username')
         ;
     }

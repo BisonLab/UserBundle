@@ -8,30 +8,28 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
+use Doctrine\ORM\EntityManagerInterface;
 
 use BisonLab\UserBundle\Entity\User;
 
+#[AsCommand(
+    name: 'bisonlab:user:create',
+    description: 'Create a user'
+)]
 class BisonLabCreateUserCommand extends Command
 {
-    protected static $defaultName = 'bisonlab:user:create';
-
-    private $entityManager;
-    private $passwordHasher;
-
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher)
+    public function __construct(
+        private EntityManagerInterface $entityManager,
+        private UserPasswordHasherInterface $passwordHasher)
     {
-        $this->entityManager = $entityManager;
-        $this->passwordHasher = $passwordHasher;
-
         parent::__construct();
     }
 
     protected function configure()
     {
         $this
-            ->setDescription('Add a short description for your command')
             ->addArgument('username', InputArgument::REQUIRED, 'Username')
             ->addArgument('email', InputArgument::REQUIRED, 'Email address')
             ->addOption('role', null, InputOption::VALUE_REQUIRED, 'Role, default USER')
