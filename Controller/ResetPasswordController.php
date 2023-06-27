@@ -3,6 +3,7 @@
 namespace BisonLab\UserBundle\Controller;
 
 use BisonLab\UserBundle\Entity\User;
+use BisonLab\UserBundle\Repository\UserRepository;
 use BisonLab\UserBundle\Form\ResetPasswordFormType;
 use BisonLab\UserBundle\Form\ResetPasswordRequestFormType;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -18,6 +19,7 @@ use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 use Psr\Container\ContainerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @Route("/reset-password")
@@ -39,7 +41,7 @@ class ResetPasswordController extends AbstractController
      *
      * @Route("/request", name="bisonlab_forgot_password_request")
      */
-    public function request(Request $request, MailerInterface $mailer): Response
+    public function request(Request $request, MailerInterface $mailer, UserRepository $userRepository): Response
     {
         $form = $this->createForm(ResetPasswordRequestFormType::class);
         $form->handleRequest($request);
@@ -47,7 +49,8 @@ class ResetPasswordController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             return $this->processSendingPasswordResetEmail(
                 $form->get('email')->getData(),
-                $mailer
+                $mailer,
+                $userRepository
             );
         }
 
@@ -78,7 +81,7 @@ class ResetPasswordController extends AbstractController
      *
      * @Route("/reset/{token}", name="bisonlab_reset_password")
      */
-    public function reset(Request $request, UserPasswordHasherInterface $passwordHasher, string $token = null): Response
+    public function reset(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager, string $token = null): Response
     {
         if ($token) {
             // We store the token in session and remove it from the URL, to avoid the URL being
@@ -119,7 +122,7 @@ class ResetPasswordController extends AbstractController
             );
 
             $user->setPassword($encodedPassword);
-            $this->getDoctrine()->getManager()->flush();
+            $entityManager->flush();
 
             // The session is cleaned up after the password has been changed.
             $this->cleanSessionAfterReset();
@@ -132,11 +135,9 @@ class ResetPasswordController extends AbstractController
         ]);
     }
 
-    private function processSendingPasswordResetEmail(string $emailFormData, MailerInterface $mailer): RedirectResponse
+    private function processSendingPasswordResetEmail(string $emailFormData, MailerInterface $mailer, UserRepository $userRepository): RedirectResponse
     {
-        $user = $this->getDoctrine()->getRepository(User::class)->findOneBy([
-            'email' => $emailFormData,
-        ]);
+        $user = $userRepository->findOneBy(['email' => $emailFormData]);
 
         // Marks that you are allowed to see the bisonlab_check_email page.
         $this->setCanCheckEmailInSession();

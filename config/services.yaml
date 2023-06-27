@@ -9,9 +9,3 @@ services:
     BisonLab\UserBundle\:
         resource: '../*'
         exclude: '../{DependencyInjection,Entity,Migrations,Tests}'
-
-    # controllers are imported separately to make sure services can be injected
-    # as action arguments even if you don't extend any base controller class
-    BisonLab\UserBundle\Controller\:
-        resource: '../Controller'
-        tags: ['controller.service_arguments']
