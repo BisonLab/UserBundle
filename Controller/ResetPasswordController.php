@@ -21,9 +21,7 @@ use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
 use Psr\Container\ContainerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-/**
- * @Route("/reset-password")
- */
+#[Route(path: '/reset-password')]
 class ResetPasswordController extends AbstractController
 {
     use ResetPasswordControllerTrait;
@@ -38,9 +36,8 @@ class ResetPasswordController extends AbstractController
 
     /**
      * Display & process form to request a password reset.
-     *
-     * @Route("/request", name="bisonlab_forgot_password_request")
      */
+    #[Route(path: '/request', name: 'bisonlab_forgot_password_request')]
     public function request(Request $request, MailerInterface $mailer, UserRepository $userRepository): Response
     {
         $form = $this->createForm(ResetPasswordRequestFormType::class);
@@ -61,9 +58,8 @@ class ResetPasswordController extends AbstractController
 
     /**
      * Confirmation page after a user has requested a password reset.
-     *
-     * @Route("/check-email", name="bisonlab_check_email")
      */
+    #[Route(path: '/check-email', name: 'bisonlab_check_email')]
     public function checkEmail(): Response
     {
         // We prevent users from directly accessing this page
@@ -78,9 +74,8 @@ class ResetPasswordController extends AbstractController
 
     /**
      * Validates and process the reset URL that the user clicked in their email.
-     *
-     * @Route("/reset/{token}", name="bisonlab_reset_password")
      */
+    #[Route(path: '/reset/{token}', name: 'bisonlab_reset_password')]
     public function reset(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager, string $token = null): Response
     {
         if ($token) {

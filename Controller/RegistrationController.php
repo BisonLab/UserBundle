@@ -13,9 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class RegistrationController extends AbstractController
 {
-    /**
-     * @Route("/register", name="bisonlab_register")
-     */
+    #[Route(path: '/register', name: 'bisonlab_register')]
     public function register(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
