@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 use BisonLab\UserBundle\Form\ResetPasswordRequestFormType;
 use BisonLab\UserBundle\Entity\User;
@@ -39,7 +40,7 @@ class UserController extends AbstractController
     /**
      * @Route("/new", name="bisonlab_user_new", methods={"GET","POST"})
      */
-    public function new(Request $request): Response
+    public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         if (!$this->getUser() || !$this->getUser()->isAdmin())
             throw $this->createAccessDeniedException("No access for you");
@@ -48,7 +49,6 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
             // Gotta reset password, but something must be in.
             $user->setPassword(uniqid());
             $entityManager->persist($user);
@@ -79,7 +79,7 @@ class UserController extends AbstractController
      *
      * @Route("/change_password", name="bisonlab_self_change_password", methods={"GET", "POST"})
      */
-    public function changeSelfPasswordAction(Request $request, UserPasswordHasherInterface $passwordHasher)
+    public function changeSelfPasswordAction(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager)
     {
         $user = $this->getUser();
 
@@ -96,7 +96,6 @@ class UserController extends AbstractController
 
             $user->setPassword($encodedPassword);
 
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->flush();
 
             return $this->redirectToRoute('bisonlab_user_profile');
@@ -114,7 +113,7 @@ class UserController extends AbstractController
      *
      * @Route("/{id}/change_password", name="bisonlab_user_change_password", methods={"GET", "POST"})
      */
-    public function changeUserPasswordAction(Request $request, UserPasswordHasherInterface $passwordHasher, User $user)
+    public function changeUserPasswordAction(Request $request, UserPasswordHasherInterface $passwordHasher, User $user, EntityManagerInterface $entityManager)
     {
         if (!$admin_user = $this->getUser())
             throw $this->createAccessDeniedException("No access for you");
@@ -133,7 +132,6 @@ class UserController extends AbstractController
 
             $user->setPassword($encodedPassword);
 
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->flush();
 
             return $this->redirectToRoute('bisonlab_user_show', ['id' => $user->getId()]);
@@ -150,7 +148,7 @@ class UserController extends AbstractController
      * @Route("/search", name="bisonlab_user_search", methods={"GET"})
      * @Route("/search", name="user_search", methods={"GET"})
      */
-    public function search(Request $request)
+    public function search(Request $request, EntityManagerInterface $entityManager)
     {
         $access = $request->query->get("access") ?? "web";
         if (!$term = $request->query->get("term"))
@@ -158,9 +156,8 @@ class UserController extends AbstractController
 
         // Gotta be able to handle two-letter usernames.
         if (strlen($term) > 1) {
-            $em = $this->getDoctrine()->getManagerForClass(User::class);
             $class = new User();
-            $repo = $em->getRepository(User::class);
+            $repo = $entityManager->getRepository(User::class);
             $result = array();
             $q = $repo->createQueryBuilder('u')
                 ->where('lower(u.username) LIKE :term')
@@ -243,7 +240,7 @@ class UserController extends AbstractController
     /**
      * @Route("/{id}/edit", name="bisonlab_user_edit", methods={"GET","POST"})
      */
-    public function edit(Request $request, User $user): Response
+    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
         if (!$admin_user = $this->getUser())
             throw $this->createAccessDeniedException("No access for you");
@@ -253,7 +250,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $entityManager->flush();
 
             return $this->redirectToRoute('bisonlab_user_index');
         }
@@ -267,14 +264,13 @@ class UserController extends AbstractController
     /**
      * @Route("/{id}", name="bisonlab_user_delete", methods={"DELETE"})
      */
-    public function delete(Request $request, User $user): Response
+    public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
         if (!$admin_user = $this->getUser())
             throw $this->createAccessDeniedException("No access for you");
         if (!$admin_user->isAdmin())
             throw $this->createAccessDeniedException("No access for you");
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
-            $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($user);
             $entityManager->flush();
         }
