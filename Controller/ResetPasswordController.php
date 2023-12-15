@@ -40,6 +40,7 @@ class ResetPasswordController extends AbstractController
     #[Route(path: '/request', name: 'bisonlab_forgot_password_request')]
     public function request(Request $request, MailerInterface $mailer, UserRepository $userRepository): Response
     {
+        $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
         $form = $this->createForm(ResetPasswordRequestFormType::class);
         $form->handleRequest($request);
 
