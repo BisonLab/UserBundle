@@ -13,21 +13,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 use BisonLab\UserBundle\Lib\ExternalEntityConfig;
 use BisonLab\UserBundle\Entity\Group;
 
-/**
- * @ORM\Entity(repositoryClass="BisonLab\UserBundle\Repository\UserRepository")
- * @ORM\Table(name="bisonlab_user")
- * @UniqueEntity("username")
- */
+#[ORM\Table(name: 'bisonlab_user')]
+#[ORM\Entity(repositoryClass: 'BisonLab\UserBundle\Repository\UserRepository')]
+#[UniqueEntity('username')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use UserTrait;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="BisonLab\UserBundle\Entity\Group", inversedBy="users")
-     * @ORM\JoinTable(name="bisonlab_users_groups",
-     *   joinColumns={@ORM\JoinColumn(name="user_id", referencedColumnName="id")},
-     *   inverseJoinColumns={@ORM\JoinColumn(name="group_id", referencedColumnName="id")}
-     * )
-     */
+    #[ORM\JoinTable(name: 'bisonlab_users_groups')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id')]
+    #[ORM\InverseJoinColumn(name: 'group_id', referencedColumnName: 'id')]
+    #[ORM\ManyToMany(targetEntity: 'BisonLab\UserBundle\Entity\Group', inversedBy: 'users')]
     private $groups;
 }

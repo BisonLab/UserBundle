@@ -9,21 +9,15 @@ use BisonLab\UserBundle\Lib\ExternalEntityConfig;
 
 trait GroupTrait
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", unique=true, length=255)
-     */
+    #[ORM\Column(type: 'string', unique: true, length: 255)]
     private $name;
 
-    /**
-     * @ORM\Column(type="array")
-     */
+    #[ORM\Column(type: 'array')]
     private $roles = [];
 
     public function __construct()

@@ -7,16 +7,12 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use BisonLab\UserBundle\Lib\ExternalEntityConfig;
 
-/**
- * @ORM\Entity(repositoryClass="BisonLab\UserBundle\Repository\GroupRepository")
- * @ORM\Table(name="bisonlab_group")
- */
+#[ORM\Table(name: 'bisonlab_group')]
+#[ORM\Entity(repositoryClass: 'BisonLab\UserBundle\Repository\GroupRepository')]
 class Group
 {
     use GroupTrait;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="BisonLab\UserBundle\Entity\User", mappedBy="groups")
-     */
+    #[ORM\ManyToMany(targetEntity: 'BisonLab\UserBundle\Entity\User', mappedBy: 'groups')]
     private $users;
 }

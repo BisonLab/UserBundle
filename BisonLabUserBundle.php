@@ -7,9 +7,7 @@ use BisonLab\UserBundle\Lib\ExternalEntityConfig;
 
 class BisonLabUserBundle extends Bundle
 {
-//     public function __toString() { return 'BisonLabUserBundle'; }
-
-    public function boot()
+    public function boot(): void
     {
        ExternalEntityConfig::setRolesConfig($this->container->getParameter('bisonlab_user.roles'));
     }

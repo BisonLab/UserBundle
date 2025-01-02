@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Doctrine\ORM\EntityManagerInterface;
 
 use BisonLab\UserBundle\Form\ResetPasswordRequestFormType;
@@ -17,14 +18,10 @@ use BisonLab\UserBundle\Form\ChangePasswordType;
 use BisonLab\UserBundle\Repository\UserRepository;
 use BisonLab\UserBundle\Lib\ExternalEntityConfig;
 
-/**
- * @Route("/bisonlab_user")
- */
+#[Route(path: '/bisonlab_user')]
 class UserController extends AbstractController
 {
-    /**
-     * @Route("/", name="bisonlab_user_index", methods={"GET"})
-     */
+    #[Route(path: '/', name: 'bisonlab_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
         // I'll use the (current)User objects own checks. That makes the
@@ -37,9 +34,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/new", name="bisonlab_user_new", methods={"GET","POST"})
-     */
+    #[Route(path: '/new', name: 'bisonlab_user_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         if (!$this->getUser() || !$this->getUser()->isAdmin())
@@ -63,9 +58,7 @@ class UserController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/profile", name="bisonlab_user_profile", methods={"GET"})
-     */
+    #[Route(path: '/profile', name: 'bisonlab_user_profile', methods: ['GET'])]
     public function profile(): Response
     {
         $user = $this->getUser();
@@ -76,9 +69,8 @@ class UserController extends AbstractController
 
     /**
      * Change password on self.
-     *
-     * @Route("/change_password", name="bisonlab_self_change_password", methods={"GET", "POST"})
      */
+    #[Route(path: '/change_password', name: 'bisonlab_self_change_password', methods: ['GET', 'POST'])]
     public function changeSelfPasswordAction(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager)
     {
         $user = $this->getUser();
@@ -110,10 +102,10 @@ class UserController extends AbstractController
 
     /**
      * Change password on user.
-     *
-     * @Route("/{id}/change_password", name="bisonlab_user_change_password", methods={"GET", "POST"})
      */
-    public function changeUserPasswordAction(Request $request, UserPasswordHasherInterface $passwordHasher, User $user, EntityManagerInterface $entityManager)
+    #[Route(path: '/{id}/change_password', name: 'bisonlab_user_change_password', methods: ['GET', 'POST'])]
+    public function changeUserPasswordAction(Request $request, UserPasswordHasherInterface $passwordHasher, EntityManagerInterface $entityManager,
+        #[MapEntity(expr: 'repository.find(id)')] User $user): Response
     {
         if (!$admin_user = $this->getUser())
             throw $this->createAccessDeniedException("No access for you");
@@ -144,10 +136,8 @@ class UserController extends AbstractController
         }
     }
 
-    /**
-     * @Route("/search", name="bisonlab_user_search", methods={"GET"})
-     * @Route("/search", name="user_search", methods={"GET"})
-     */
+    #[Route(path: '/search', name: 'bisonlab_user_search', methods: ['GET'])]
+    #[Route(path: '/search', name: 'user_search', methods: ['GET'])]
     public function search(Request $request, EntityManagerInterface $entityManager)
     {
         $access = $request->query->get("access") ?? "web";
@@ -223,10 +213,9 @@ class UserController extends AbstractController
             $params);
     }
 
-    /**
-     * @Route("/{id}", name="bisonlab_user_show", methods={"GET"})
-     */
-    public function show(User $user): Response
+    #[Route(path: '/{id}', name: 'bisonlab_user_show', methods: ['GET'])]
+    public function show(
+        #[MapEntity(expr: 'repository.find(id)')] User $user): Response
     {
         if (!$this->getUser() || !$this->getUser()->isAdmin())
             throw $this->createAccessDeniedException("No access for you");
@@ -237,10 +226,9 @@ class UserController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/{id}/edit", name="bisonlab_user_edit", methods={"GET","POST"})
-     */
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    #[Route(path: '/{id}/edit', name: 'bisonlab_user_edit', methods: ['GET', 'POST'])]
+    public function edit(Request $request, EntityManagerInterface $entityManager,
+        #[MapEntity(expr: 'repository.find(id)')] User $user): Response
     {
         if (!$admin_user = $this->getUser())
             throw $this->createAccessDeniedException("No access for you");
@@ -261,10 +249,9 @@ class UserController extends AbstractController
         ]);
     }
 
-    /**
-     * @Route("/{id}", name="bisonlab_user_delete", methods={"DELETE"})
-     */
-    public function delete(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    #[Route(path: '/{id}', name: 'bisonlab_user_delete', methods: ['DELETE'])]
+    public function delete(Request $request, EntityManagerInterface $entityManager,
+        #[MapEntity(expr: 'repository.find(id)')] User $user): Response
     {
         if (!$admin_user = $this->getUser())
             throw $this->createAccessDeniedException("No access for you");
