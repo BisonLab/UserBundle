@@ -13,6 +13,7 @@
                 <th>Email</th>
                 <th>Enabled</th>
                 <th>Roles</th>
+                <th>Groups</th>
                 <th>&nbsp;</th>
             </tr>
         </thead>
@@ -24,6 +25,7 @@
                 <td>{{ user.email }}</td>
                 <td>{% if  user.enabled %}Yes{%else%}No{%endif%}</td>
                 <td>{{ user.rolelabels | join(", ") }}</td>
+                <td>{{ user.groups | join(", ")}}</td>
                 <td>
                     <a href="{{ path('bisonlab_user_show', {'id': user.id}) }}">Show</a>
                     <a href="{{ path('bisonlab_user_edit', {'id': user.id}) }}">Edit</a>
