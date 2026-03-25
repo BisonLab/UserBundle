@@ -56,6 +56,11 @@ trait UserTrait
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $full_name;
 
+    /**
+     * session - set property, not meant for storing
+     */
+    private ?string $on_behalf_of;
+
     public function __construct()
     {
         $this->last_login = new \DateTime();
@@ -324,6 +329,21 @@ trait UserTrait
         return (string) $this->username;
     }
 
+    /**
+     * With API calls, you may use a generic user, this is the user on the
+     * other end of the call.
+     */
+    public function getOnBehalfOf(): ?string
+    {
+        return (string) $this->on_befalf_of;
+    }
+
+    public function setOnBehalfOf(?string $onBehalfOf): self
+    {
+        $this->on_befalf_of = $onBehalfOf;
+
+        return $this;
+    }
 
     public function __toString(): string
     {
