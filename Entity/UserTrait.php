@@ -335,12 +335,12 @@ trait UserTrait
      */
     public function getOnBehalfOf(): ?string
     {
-        return (string) $this->on_befalf_of;
+        return (string) $this->on_behalf_of;
     }
 
     public function setOnBehalfOf(?string $onBehalfOf): self
     {
-        $this->on_befalf_of = $onBehalfOf;
+        $this->on_behalf_of = $onBehalfOf;
 
         return $this;
     }
