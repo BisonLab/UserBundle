@@ -13,7 +13,7 @@ use BisonLab\UserBundle\Entity\Group;
 trait UserTrait
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\GeneratedValue(strategy: "SEQUENCE")]
     #[ORM\Column(type: 'integer')]
     private $id;
 
@@ -26,7 +26,7 @@ trait UserTrait
     #[Assert\Email]
     private $email;
 
-    #[ORM\Column(type: 'array')]
+    #[ORM\Column(type: 'json')]
     private $roles = [];
 
     /**

@@ -10,14 +10,14 @@ use BisonLab\UserBundle\Lib\ExternalEntityConfig;
 trait GroupTrait
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+    #[ORM\GeneratedValue(strategy: "SEQUENCE")]
     #[ORM\Column(type: 'integer')]
     private $id;
 
     #[ORM\Column(type: 'string', unique: true, length: 255)]
     private $name;
 
-    #[ORM\Column(type: 'array')]
+    #[ORM\Column(type: 'json')]
     private $roles = [];
 
     public function __construct()
