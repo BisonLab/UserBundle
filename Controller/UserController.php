@@ -191,7 +191,7 @@ class UserController extends AbstractController
                         $res['label'] = $user->getFullName();
                         $res['value'] = $user->getFullName();
                     }
-                    if ($request->get("value_with_email")) {
+                    if ($request->query->get("value_with_email")) {
                         $res['value'] = $res['value'] . " - " . $user->getEmail();
                         $res['label'] = $res['label'] . " - " . $user->getEmail();
                     }
